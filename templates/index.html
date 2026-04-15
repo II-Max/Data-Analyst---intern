@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Data Input Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4472C4;
+            --secondary-color: #70AD47;
+            --danger-color: #C5504F;
+            --warning-color: #FFC000;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container-app {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .card-main {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2E5CB3 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header-custom h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-custom {
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-custom:hover {
+            background: #2E5CB3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(68, 114, 196, 0.3);
+            color: white;
+        }
+
+        .btn-success-custom {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-success-custom:hover {
+            background: #5A8E3A;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(112, 173, 71, 0.3);
+            color: white;
+        }
+
+        .btn-danger-custom {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-danger-custom:hover {
+            background: #A53D39;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(197, 80, 79, 0.3);
+            color: white;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #F5F5F5;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+
+        .table-custom thead {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .table-custom thead th {
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .table-custom tbody td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .table-custom tbody tr:hover {
+            background: #F9F9F9;
+        }
+
+        .table-custom tbody tr.error-row {
+            background: #FFE6E6;
+        }
+
+        .input-cell {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .input-cell:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(68, 114, 196, 0.1);
+        }
+
+        .btn-action {
+            padding: 4px 8px;
+            font-size: 12px;
+            margin: 0 2px;
+        }
+
+        .form-section {
+            padding: 20px;
+            background: #F9F9F9;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .required-badge {
+            color: var(--danger-color);
+            font-size: 16px;
+        }
+
+        .alert-custom {
+            border-radius: 6px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            background: #F9F9F9;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-card p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .tab-content-custom {
+            display: none;
+        }
+
+        .tab-content-custom.active {
+            display: block;
+        }
+
+        .nav-tabs-custom {
+            border-bottom: 2px solid #E0E0E0;
+            padding: 0 20px;
+        }
+
+        .nav-tabs-custom .nav-link {
+            color: #666;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: transparent;
+        }
+
+        .modal-content-custom {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar-custom {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .card-header-custom {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .toolbar {
+                flex-direction: column;
+            }
+
+            .table-custom {
+                font-size: 12px;
+            }
+
+            .table-custom thead th,
+            .table-custom tbody td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-app">
+        <div class="card-main">
+            <!-- Header -->
+            <div class="card-header-custom">
+                <h1>
+                    <i class="fas fa-table"></i>
+                    Excel Data Input Application
+                </h1>
+                <div>
+                    <span id="version">v1.0</span>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-section">
+                    <button id="addRowBtn" class="btn btn-custom btn-primary-custom">
+                        <i class="fas fa-plus"></i> Add Row
+                    </button>
+                    <button id="removeRowBtn" class="btn btn-custom btn-danger-custom">
+                        <i class="fas fa-trash"></i> Delete Row
+                    </button>
+                </div>
+                <div class="toolbar-section">
+                    <label for="fileUpload" class="btn btn-custom btn-primary-custom" style="margin: 0; cursor: pointer;">
+                        <i class="fas fa-upload"></i> Upload Excel File
+                    </label>
+                    <input type="file" id="fileUpload" accept=".xlsx" style="display: none;">
+                </div>
+                <div class="toolbar-section">
+                    <button id="exportBtn" class="btn btn-custom btn-success-custom">
+                        <i class="fas fa-download"></i> Export Excel
+                    </button>
+                    <button id="clearBtn" class="btn btn-custom btn-danger-custom">
+                        <i class="fas fa-broom"></i> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="statistics">
+                <div class="stat-card">
+                    <h3 id="rowCount">0</h3>
+                    <p>Number of Data Rows</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="colCount">0</h3>
+                    <p>Number of Columns</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="errorCount">0</h3>
+                    <p>Errors</p>
+                </div>
+            </div>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer" style="padding: 15px;"></div>
+
+            <!-- Table Container -->
+            <div class="table-container" id="tableContainer">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No data available. Add a row or upload an Excel file to get started.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="loadingModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-body text-center" style="padding: 40px;">
+                    <div class="loading"></div>
+                    <p style="margin-top: 20px; color: #666;" id="loadingText">Processing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        class DataInputApp {
+            constructor() {
+                this.data = [];
+                this.columns = [];
+                this.selectedRows = new Set();
+                this.init();
+            }
+
+            async init() {
+                await this.loadColumns();
+                this.attachEventListeners();
+                this.updateUI();
+            }
+
+            async loadColumns() {
+                try {
+                    const response = await fetch('/api/columns');
+                    this.columns = await response.json();
+                    document.getElementById('colCount').textContent = this.columns.length;
+                } catch (error) {
+                    this.showAlert('Error loading column configuration', 'danger');
+                }
+            }
+
+            attachEventListeners() {
+                document.getElementById('addRowBtn').addEventListener('click', () => this.addRow());
+                document.getElementById('removeRowBtn').addEventListener('click', () => this.removeRows());
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearAll());
+                document.getElementById('fileUpload').addEventListener('change', (e) => this.uploadFile(e));
+            }
+
+            createEmptyRow() {
+                const row = {};
+                this.columns.forEach(col => {
+                    row[col.name] = '';
+                });
+                return row;
+            }
+
+            addRow() {
+                this.data.push(this.createEmptyRow());
+                this.renderTable();
+                this.updateUI();
+                this.showAlert('Row added successfully', 'success');
+            }
+
+            removeRows() {
+                if (this.selectedRows.size === 0) {
+                    this.showAlert('Please select a row to delete', 'warning');
+                    return;
+                }
+
+                const indices = Array.from(this.selectedRows).sort((a, b) => b - a);
+                indices.forEach(idx => {
+                    this.data.splice(idx, 1);
+                });
+
+                this.selectedRows.clear();
+                this.renderTable();
+                this.updateUI();
+                this.showAlert(`Deleted ${indices.length} row(s)`, 'success');
+            }
+
+            clearAll() {
+                if (this.data.length === 0) {
+                    this.showAlert('No data to delete', 'info');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to delete all data?')) {
+                    this.data = [];
+                    this.selectedRows.clear();
+                    this.renderTable();
+                    this.updateUI();
+                    this.showAlert('All data deleted', 'success');
+                }
+            }
+
+            renderTable() {
+                const container = document.getElementById('tableContainer');
+
+                if (this.data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No data available. Add a row or upload an Excel file to get started.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<table class="table-custom"><thead><tr>';
+
+                // Header with checkbox
+                html += '<th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllCheckbox"></th>';
+
+                this.columns.forEach(col => {
+                    html += `<th>${col.name}${col.required ? '<span class="required-badge">*</span>' : ''}</th>`;
+                });
+
+                html += '<th style="width: 100px; text-align: center;">Actions</th></tr></thead><tbody>';
+
+                this.data.forEach((row, rowIdx) => {
+                    const hasError = this.validateRow(row);
+                    html += `<tr class="${hasError ? 'error-row' : ''}">`;
+                    html += `<td style="text-align: center;"><input type="checkbox" class="row-checkbox" data-row="${rowIdx}"></td>`;
+
+                    this.columns.forEach(col => {
+                        const value = row[col.name] || '';
+                        let inputHtml = '';
+
+                        switch (col.type) {
+                            case 'select':
+                                inputHtml = `
+                                    <select class="input-cell" data-row="${rowIdx}" data-col="${col.name}">
+                                        <option value="">-- Select --</option>
+                                        ${col.options.map(opt => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                                    </select>
+                                `;
+                                break;
+                            case 'date':
+                                inputHtml = `<input type="date" class="input-cell" data-row="${rowIdx}" data-col="${col.name}" value="${value}">`;
+                                break;
+                            case 'email':
+                                inputHtml = `<input type="email" class="input-cell" data-row="${rowIdx}" data-col="${col.name}" value="${value}">`;
+                                break;
+                            case 'number':
+                                inputHtml = `<input type="number" class="input-cell" data-row="${rowIdx}" data-col="${col.name}" value="${value}">`;
+                                break;
+                            default:
+                                inputHtml = `<input type="text" class="input-cell" data-row="${rowIdx}" data-col="${col.name}" value="${value}">`;
+                        }
+
+                        html += `<td>${inputHtml}</td>`;
+                    });
+
+                    html += `<td style="text-align: center;">
+                        <button class="btn btn-sm btn-danger-custom btn-action" onclick="app.deleteRow(${rowIdx})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td></tr>`;
+                });
+
+                html += '</tbody></table>';
+                container.innerHTML = html;
+
+                // Attach input listeners
+                this.attachInputListeners();
+                this.attachCheckboxListeners();
+            }
+
+            attachInputListeners() {
+                document.querySelectorAll('.input-cell').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const rowIdx = parseInt(e.target.dataset.row);
+                        const colName = e.target.dataset.col;
+                        this.data[rowIdx][colName] = e.target.value;
+                        this.updateUI();
+                    });
+
+                    input.addEventListener('input', (e) => {
+                        const rowIdx = parseInt(e.target.dataset.row);
+                        const colName = e.target.dataset.col;
+                        this.data[rowIdx][colName] = e.target.value;
+                    });
+                });
+            }
+
+            attachCheckboxListeners() {
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    rowCheckboxes.forEach(checkbox => {
+                        checkbox.checked = e.target.checked;
+                        const rowIdx = parseInt(checkbox.dataset.row);
+                        if (e.target.checked) {
+                            this.selectedRows.add(rowIdx);
+                        } else {
+                            this.selectedRows.delete(rowIdx);
+                        }
+                    });
+                });
+
+                rowCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const rowIdx = parseInt(e.target.dataset.row);
+                        if (e.target.checked) {
+                            this.selectedRows.add(rowIdx);
+                        } else {
+                            this.selectedRows.delete(rowIdx);
+                        }
+                        selectAllCheckbox.checked = this.selectedRows.size === this.data.length;
+                    });
+                });
+            }
+
+            deleteRow(rowIdx) {
+                this.data.splice(rowIdx, 1);
+                this.selectedRows.delete(rowIdx);
+                this.renderTable();
+                this.updateUI();
+            }
+
+            validateRow(row) {
+                return this.columns.some(col => col.required && !row[col.name]?.toString().trim());
+            }
+
+            validateAll() {
+                const errors = [];
+                this.data.forEach((row, idx) => {
+                    this.columns.forEach(col => {
+                        if (col.required && !row[col.name]?.toString().trim()) {
+                            errors.push(`Row ${idx + 1}: Column "${col.name}" is required`);
+                        }
+                    });
+                });
+                return errors;
+            }
+
+            updateUI() {
+                document.getElementById('rowCount').textContent = this.data.length;
+                const errorCount = this.data.filter(row => this.validateRow(row)).length;
+                document.getElementById('errorCount').textContent = errorCount;
+            }
+
+            async exportData() {
+                const errors = this.validateAll();
+                if (errors.length > 0) {
+                    this.showAlert(`Please fix ${errors.length} error(s) before exporting`, 'danger');
+                    return;
+                }
+
+                if (this.data.length === 0) {
+                    this.showAlert('No data to export', 'warning');
+                    return;
+                }
+
+                this.showLoading(true, 'Creating Excel file...');
+
+                try {
+                    const response = await fetch('/api/export', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.showAlert('Data exported successfully', 'success');
+                        setTimeout(() => {
+                            window.location.href = result.download_url;
+                        }, 500);
+                    } else {
+                        this.showAlert(result.error || 'Error exporting data', 'danger');
+                    }
+                } catch (error) {
+                    this.showAlert('Error: ' + error.message, 'danger');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async uploadFile(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (!file.name.endsWith('.xlsx')) {
+                    this.showAlert('Only .xlsx files are accepted', 'danger');
+                    return;
+                }
+
+                this.showLoading(true, 'Uploading file...');
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.data = result.data;
+                        this.renderTable();
+                        this.updateUI();
+                        this.showAlert(`Upload successful: ${result.message}`, 'success');
+                    } else {
+                        this.showAlert(result.error || 'Error uploading file', 'danger');
+                    }
+                } catch (error) {
+                    this.showAlert('Error: ' + error.message, 'danger');
+                } finally {
+                    this.showLoading(false);
+                    document.getElementById('fileUpload').value = '';
+                }
+            }
+
+            showAlert(message, type = 'info') {
+                const alertId = 'alert-' + Date.now();
+                const alertHtml = `
+                    <div id="${alertId}" class="alert alert-custom alert-${type} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+
+                const container = document.getElementById('alertContainer');
+                container.insertAdjacentHTML('beforeend', alertHtml);
+
+                setTimeout(() => {
+                    const element = document.getElementById(alertId);
+                    if (element) {
+                        element.remove();
+                    }
+                }, 5000);
+            }
+
+            showLoading(show, text = 'Processing...') {
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loadingModal'));
+                document.getElementById('loadingText').textContent = text;
+                if (show) {
+                    modal.show();
+                } else {
+                    modal.hide();
+                }
+            }
+        }
+
+        // Initialize app
+        const app = new DataInputApp();
+    </script>
+</body>
+</html>
